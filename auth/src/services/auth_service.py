@@ -4,7 +4,7 @@ from flask_jwt_extended import get_jwt_identity
 from models import AuthHistoryOrm, LoginRequest, RoleOrm, SignupRequest, User, UserOrm
 
 from .base_service import BaseService
-from .utils import error_handler
+from .utils import define_device, error_handler
 
 
 class AuthenticationService(BaseService):
@@ -18,7 +18,9 @@ class AuthenticationService(BaseService):
         base_role = self.client.retrieve(RoleOrm, name='user')
 
         self.client.create(UserOrm, **user.dict(exclude={'auth_history', 'roles'}), roles=[base_role])
-        self.client.create(AuthHistoryOrm, user_id=user.id, user_agent=user_agent)
+        self.client.create(
+            AuthHistoryOrm, user_id=user.id, user_agent=user_agent, user_device_type=define_device(user_agent)
+        )
 
         return jsonify(self._create_tokens(user.id, [base_role.name], is_fresh=True))
 
@@ -28,7 +30,9 @@ class AuthenticationService(BaseService):
 
         user = LoginRequest(**request_data).user
 
-        self.client.create(AuthHistoryOrm, user_id=user.id, user_agent=user_agent)
+        self.client.create(
+            AuthHistoryOrm, user_id=user.id, user_agent=user_agent, user_device_type=define_device(user_agent)
+        )
 
         return jsonify(self._create_tokens(user.id, user.get_roles(), is_fresh=True))
 
@@ -56,4 +60,4 @@ class AuthenticationService(BaseService):
         user = get_jwt_identity()
 
         auth_history = User.from_orm(self.client.retrieve(UserOrm, id=user.get('user_id'))).auth_history
-        return jsonify(reversed([auth.dict(include={'user_agent', 'timestamp'}) for auth in auth_history][:10]))
+        return jsonify([auth.dict(include={'user_agent', 'timestamp'}) for auth in auth_history][::-1][:10])
