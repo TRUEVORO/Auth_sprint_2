@@ -6,7 +6,7 @@ from .exceptions import (
     UserNotExistError,
     WrongPasswordError,
 )
-from .settings import settings
+from .settings import Settings, settings
 
 __all__ = (
     'AuthError',
@@ -16,4 +16,5 @@ __all__ = (
     'NoPermissionError',
     'EmptyRequestError',
     'settings',
+    'Settings',
 )

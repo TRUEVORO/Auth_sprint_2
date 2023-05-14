@@ -33,7 +33,8 @@ RUN apt update \
 COPY --chown=${USER}:${USER} --from=build ${APP}/venv ./venv
 COPY --chown=${USER}:${USER} . .
 
-RUN chmod +x ${APP}/entrypoint.sh
+RUN chmod +x ${APP}/entrypoint.sh \
+    && chmod -R +r ${APP}/client_secret.json
 
 USER ${USER}
 

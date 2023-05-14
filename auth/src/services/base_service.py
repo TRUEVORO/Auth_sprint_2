@@ -5,7 +5,7 @@ from uuid import UUID
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti, get_jwt
 
 from clients import BaseClient
-from core import settings
+from core import Settings
 from extensions import jwt, redis_storage
 from storages import BaseStorage
 
@@ -15,10 +15,11 @@ class BaseService(ABC):
 
     jwt_blocklist: BaseStorage = redis_storage
 
-    def __init__(self, client: BaseClient):
+    def __init__(self, client: BaseClient, settings: Settings):
         """Initialize BaseService with a client and JWT blocklist storage."""
 
         self.client: BaseClient = client
+        self.settings: Settings = settings
 
     @staticmethod
     @jwt.token_in_blocklist_loader
@@ -53,4 +54,4 @@ class BaseService(ABC):
         access_jti = payload.get('access_jti')
 
         self.jwt_blocklist.save_data(refresh_jti, 'refresh', ttl=int(refresh_exp - time()))
-        self.jwt_blocklist.save_data(access_jti, 'access', ttl=settings.access_token_expires)
+        self.jwt_blocklist.save_data(access_jti, 'access', ttl=self.settings.access_token_expires)

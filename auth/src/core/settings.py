@@ -1,7 +1,7 @@
 from logging import config as logging_config
 from pathlib import Path
 
-from pydantic import BaseSettings, PostgresDsn, RedisDsn
+from pydantic import BaseSettings, PostgresDsn, RedisDsn, validator
 
 from .logger import LOGGING_CONFIG
 
@@ -14,11 +14,33 @@ class Settings(BaseSettings):
     """Settings class to read environment variables."""
 
     project_name: str
+
+    secret_key: str
+
     postgres_dsn: PostgresDsn
+
     redis_dsn: RedisDsn
+
     jwt_secret_key: str
     access_token_expires: int
     refresh_token_expires: int
+
+    client_secrets_file: Path | str
+    scopes: list[str] | str
+
+    @validator('client_secrets_file', pre=True, always=True)
+    def set_secret_file_path(cls, v: Path | str) -> Path | str:
+        """Set absolute path to client secret file."""
+
+        return BASE_DIR / f'auth/{v}'
+
+    @validator('scopes', pre=True, always=True)
+    def set_scopes(cls, v: list[str] | str) -> list[str]:
+        """Set scopes values as a list."""
+
+        if isinstance(v, str):
+            return v.split(' ')
+        return v
 
     class Config:
         env_file = BASE_DIR / '.env'

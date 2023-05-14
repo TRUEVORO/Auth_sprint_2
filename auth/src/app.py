@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from pydantic import PostgresDsn
 
@@ -12,6 +14,7 @@ def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
     if testing:
         app.config['TESTING'] = testing
 
+    app.secret_key = settings.secret_key
     app.register_blueprint(admin_routes)
     app.register_blueprint(auth_routes)
 
@@ -26,4 +29,5 @@ def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
 app = create_app(settings.postgres_dsn)
 
 if __name__ == '__main__':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     app.run(debug=True)
