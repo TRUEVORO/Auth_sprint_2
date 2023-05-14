@@ -1,7 +1,7 @@
 from logging import config as logging_config
 from pathlib import Path
 
-from pydantic import BaseSettings, PostgresDsn, RedisDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, RedisDsn, validator
 
 from .logger import LOGGING_CONFIG
 
@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     secret_key: str
 
     postgres_dsn: PostgresDsn
-
     redis_dsn: RedisDsn
+    jaeger_dsn: AnyHttpUrl
 
     jwt_secret_key: str
     access_token_expires: int

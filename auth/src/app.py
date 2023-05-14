@@ -1,11 +1,9 @@
-import os
-
 from flask import Flask
 from pydantic import PostgresDsn
 
 from api.v1 import admin_routes, auth_routes
 from core import settings
-from extensions import db, init_db, init_jwt, init_migrate, init_swagger
+from extensions import configure_tracer, db, init_db, init_jwt, init_migrate, init_swagger
 
 
 def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
@@ -27,7 +25,7 @@ def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
 
 
 app = create_app(settings.postgres_dsn)
+configure_tracer(app)
 
 if __name__ == '__main__':
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     app.run(debug=True)
