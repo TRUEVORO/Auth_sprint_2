@@ -2,11 +2,12 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from clients import sqlalchemy_client
+from core import settings
 from services import AdminService
 from services.utils import check_permission
 
 admin_routes: Blueprint = Blueprint('admin', __name__, url_prefix='/admin')
-admin_service: AdminService = AdminService(client=sqlalchemy_client)
+admin_service: AdminService = AdminService(client=sqlalchemy_client, settings=settings)
 
 
 @admin_routes.route('/roles/create', methods=('POST',))

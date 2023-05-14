@@ -1,3 +1,5 @@
+from uuid import UUID, uuid4
+
 from pydantic import EmailStr, Field
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,7 +27,7 @@ class _User(UuidMixin):
     """Base user model."""
 
     email: EmailStr
-    password: str = Field(min_length=8)
+    password: str | UUID = Field(default_factory=uuid4, min_length=8)
 
 
 class User(_User):

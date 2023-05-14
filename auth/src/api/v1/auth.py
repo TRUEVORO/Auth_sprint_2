@@ -2,10 +2,51 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from clients import sqlalchemy_client
+from core import settings
 from services import AuthenticationService
 
 auth_routes: Blueprint = Blueprint('auth', __name__, url_prefix='/auth')
-auth_service: AuthenticationService = AuthenticationService(client=sqlalchemy_client)
+auth_service: AuthenticationService = AuthenticationService(client=sqlalchemy_client, settings=settings)
+
+
+@auth_routes.route('/google-auth', methods=('POST',))
+def google_auth():
+    """
+    Authorise user with Google
+    This endpoint authorises user with the provided data.
+    ---
+    tags:
+      - Authentication
+    responses:
+      200:
+        description: User authorised successfully
+      400:
+        description: Not found
+      409:
+        description: Conflict
+    """
+
+    return auth_service.google_auth()
+
+
+@auth_routes.route('/google-callback', methods=('GET',))
+def google_callback():
+    """
+    Authorise user with Google
+    This endpoint handles user the callback after authorization.
+    ---
+    tags:
+      - Authentication
+    responses:
+      200:
+        description: User authorised successfully
+      400:
+        description: Not found
+      409:
+        description: Conflict
+    """
+
+    return auth_service.google_callback()
 
 
 @auth_routes.route('/sign-up', methods=('POST',))
@@ -41,9 +82,8 @@ def sign_up():
         description: Conflict
     """
     request_data = request.get_json()
-    user_agent = request.headers.get('User-Agent')
 
-    return auth_service.sign_up(request_data, user_agent)
+    return auth_service.sign_up(request_data)
 
 
 @auth_routes.route('/sign-in', methods=('POST',))
@@ -76,9 +116,8 @@ def sign_in():
         description: Conflict
     """
     request_data = request.get_json()
-    user_agent = request.headers.get('User-Agent')
 
-    return auth_service.sign_in(request_data, user_agent)
+    return auth_service.sign_in(request_data)
 
 
 @auth_routes.route('/refresh', methods=('POST',))
