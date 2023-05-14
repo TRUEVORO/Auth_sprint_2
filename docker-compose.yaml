@@ -7,6 +7,8 @@ services:
       context: ./auth
       dockerfile: Dockerfile
     restart: always
+#    environment:
+#      - OAUTHLIB_INSECURE_TRANSPORT=1
     env_file:
       - .env
     expose:
@@ -17,6 +19,7 @@ services:
       - db-auth
       - redis-auth
       - nginx-auth
+      - jaeger-auth
 
   db-auth:
     image: postgres:15.2-alpine
@@ -51,6 +54,16 @@ services:
       custom_network:
     ports:
       - ${NGINX_PORT}:${NGINX_PORT}
+
+  jaeger-auth:
+    image: jaegertracing/all-in-one:1.6.0
+    restart: always
+    networks:
+      custom_network:
+    ports:
+      - ${JAEGER_PORT_1}:${JAEGER_PORT_1}/udp
+      - ${JAEGER_PORT_2}:${JAEGER_PORT_2}
+
 
   test-db-auth:
     image: postgres:15.2-alpine
