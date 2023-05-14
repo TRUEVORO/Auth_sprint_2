@@ -14,8 +14,8 @@ class Settings(BaseSettings):
     """Settings class to read environment variables."""
 
     project_name: str
-
     secret_key: str
+    request_limit_per_minute: int
 
     postgres_dsn: PostgresDsn
     redis_dsn: RedisDsn

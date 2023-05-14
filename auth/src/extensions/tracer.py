@@ -11,6 +11,8 @@ tracer = trace.get_tracer(__name__)
 
 
 def read_x_request_id_header(app: Flask) -> None:
+    """Middleware function to read 'X-Request-Id' header from the incoming request."""
+
     @app.before_request
     def before_request():
         request_id = request.headers.get('X-Request-Id')
@@ -19,6 +21,8 @@ def read_x_request_id_header(app: Flask) -> None:
 
 
 def configure_tracer(app: Flask) -> None:
+    """Configures OpenTelemetry tracer for the given Flask app."""
+
     read_x_request_id_header(app)
 
     trace.set_tracer_provider(TracerProvider())
@@ -26,7 +30,7 @@ def configure_tracer(app: Flask) -> None:
         BatchSpanProcessor(
             JaegerExporter(
                 agent_host_name=settings.jaeger_dsn.host,
-                agent_port=settings.jaeger_dsn.port,
+                agent_port=int(settings.jaeger_dsn.port),
             )
         )
     )
