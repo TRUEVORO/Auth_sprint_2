@@ -5,7 +5,7 @@ from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 
-from models import AuthHistoryOrm, LoginRequest, RoleOrm, SignupRequest, User, UserOrm
+from models import AuthHistoryOrm, LoginRequest, RoleOrm, SignupRequest, SocialAccountOrm, User, UserOrm
 
 from .base_service import BaseService
 from .utils import define_device, error_handler
@@ -30,7 +30,7 @@ class AuthenticationService(BaseService):
         return redirect(authorization_url)
 
     @error_handler()
-    def google_callback(self):
+    def google_callback(self):  # TODO: переделать и вынести базовый класс для сторонних провайдеров
         """Google callback method."""
 
         state = session['state']
@@ -61,6 +61,8 @@ class AuthenticationService(BaseService):
         self.client.create(
             AuthHistoryOrm, user_id=user.id, user_agent=user_agent, user_device_type=define_device(user_agent)
         )
+
+        self.client.create(SocialAccountOrm, user_id=user.id, social_id=id_info.get('sub'), social_name='google')
 
         return jsonify(self._create_tokens(user.id, user.get_roles(), is_fresh=True))
 

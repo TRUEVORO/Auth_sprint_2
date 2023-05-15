@@ -9,10 +9,10 @@ network: ## - Создать общую сеть для сервисов
 	docker network create custom_network
 
 run: ## - Запустить docker-compose
-	docker-compose -f docker-compose.yaml up --build -d auth
+	docker-compose -f docker-compose.yaml up --build -d auth-api && docker-compose -f docker-compose.yaml up --build -d auth-grpc
 
 db: ## - Выполнить миграции
-	docker-compose -f docker-compose.yaml exec auth bash -c "cd /opt/auth/src && python -m flask db upgrade"
+	docker-compose -f docker-compose.yaml exec auth-api bash -c "cd /opt/auth/src && python -m flask db upgrade"
 
 auth_service: ## - Запустить сервис auth
 	make run

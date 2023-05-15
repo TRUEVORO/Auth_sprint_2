@@ -8,4 +8,9 @@ echo "PostgreSQL started"
 
 cd src || exit
 
-gunicorn -c gunicorn/gunicorn.py -k gevent app:app
+if [ "$RUN_MODE" = "GRPC" ]
+then
+  python main_grpc.py
+else
+  gunicorn -c gunicorn/gunicorn.py -k gevent app:app
+fi
