@@ -23,9 +23,10 @@
 
 Решение залейте в репозиторий текущего спринта и отправьте на ревью.
 
-## Ссылка на спринт:
+## Ссылки на спринты:
 
 - [Auth_sprint_2](https://github.com/TRUEVORO/Auth_sprint_2)
+- [Async_API_sprint_2](https://github.com/TRUEVORO/Async_API_sprint_2)
 
 
 ## Для запуска сервиса необходимо:

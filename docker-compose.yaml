@@ -1,18 +1,34 @@
 version: '3.9'
 
 services:
-  auth:
-    container_name: ${PROJECT_NAME}-app
+  auth-api:
     build:
       context: ./auth
       dockerfile: Dockerfile
     restart: always
-#    environment:
-#      - OAUTHLIB_INSECURE_TRANSPORT=1
     env_file:
       - .env
     expose:
       - ${APP_PORT}
+    networks:
+      custom_network:
+    depends_on:
+      - db-auth
+      - redis-auth
+      - nginx-auth
+      - jaeger-auth
+
+  auth-grpc:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - RUN_MODE=GRPC
+    env_file:
+      - .env
+    expose:
+      - ${GRPC_PORT}
     networks:
       custom_network:
     depends_on:
@@ -28,8 +44,8 @@ services:
       - postgres:/var/lib/postgresql/data
     env_file:
       - .env
-    expose:
-      - ${POSTGRES_PORT}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
       custom_network:
 

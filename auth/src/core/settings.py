@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     project_name: str
     secret_key: str
     request_limit_per_minute: int
+    enable_tracer: bool
+
+    grpc_port: int
 
     postgres_dsn: PostgresDsn
     redis_dsn: RedisDsn

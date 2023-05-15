@@ -11,6 +11,7 @@ def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
 
     if testing:
         app.config['TESTING'] = testing
+        settings.enable_tracing = False
 
     app.secret_key = settings.secret_key
     app.register_blueprint(admin_routes)
@@ -21,12 +22,15 @@ def create_app(postgres_dsn: PostgresDsn, testing: bool = False) -> Flask:
     init_migrate(app, db)
     init_swagger(app)
 
+    configure_rate_limit(app)
+
+    if settings.enable_tracer:
+        configure_tracer(app)
+
     return app
 
 
 app = create_app(settings.postgres_dsn)
-configure_tracer(app)
-configure_rate_limit(app)
 
 
 if __name__ == '__main__':
